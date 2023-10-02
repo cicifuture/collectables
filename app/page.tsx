@@ -1,10 +1,36 @@
-const Home = () => {
-    return (
-        <section className="flex-start flex-col paddings mb-16">
-            <h1>categories</h1>
-            <h1>posts</h1>
-            <h1>loadmore</h1>
-        </section>
-    )
+import { Card, Title, Text } from '@tremor/react';
+import { queryBuilder } from '../lib/planetscale';
+import Search from './search';
+import UsersTable from './table';
+
+export const dynamic = 'force-dynamic';
+
+export default async function IndexPage({
+  searchParams
+}: {
+  searchParams: { q: string };
+}) {
+  const search = searchParams.q ?? '';
+  const users = await queryBuilder
+    .selectFrom('users')
+    .select(['id', 'name', 'username', 'email'])
+    .where('name', 'like', `%${search}%`)
+    .execute();
+
+  return (
+    <>
+
+    <main className="p-4 md:p-10 mx-auto max-w-7xl">
+      <Title className="text-2xl">News</Title>
+      <Text className="text-xl pt-3">
+      Discover New Collectibles And Fascinating Campaigns!
+      </Text>
+     
+      <Search />
+      <Card className="mt-6">
+        <UsersTable users={users} />
+      </Card>
+    </main>
+    </>
+  );
 }
-export default Home;
